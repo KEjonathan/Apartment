@@ -24,7 +24,16 @@ app.use('/api', apiRoutes);
 
 // Health check route
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', message: 'Server is running' });
+  const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
+  
+  res.status(200).json({ 
+    status: 'OK', 
+    message: 'Server is running',
+    database: {
+      status: dbStatus,
+      uri: process.env.NODE_ENV === 'production' ? '(hidden in production)' : process.env.MONGODB_URI
+    }
+  });
 });
 
 // Error handling middleware

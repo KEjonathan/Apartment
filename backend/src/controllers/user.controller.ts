@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { validationResult } from 'express-validator';
-import jwt from 'jsonwebtoken';
+import jwt, { Secret, SignOptions } from 'jsonwebtoken';
 import User, { IUser, UserRole } from '../models/User';
 import { notifySuperAdmins } from '../services/notificationService';
 import { NotificationType } from '../models/Notification';
@@ -52,10 +52,13 @@ export const registerUser = async (req: Request, res: Response) => {
     };
 
     // Sign JWT token
+    const secret = process.env.JWT_SECRET || 'defaultsecret';
+    const expiresIn = process.env.JWT_EXPIRES_IN || '30d';
+    
     jwt.sign(
       payload,
-      process.env.JWT_SECRET || 'defaultsecret',
-      { expiresIn: process.env.JWT_EXPIRES_IN || '30d' },
+      secret as Secret,
+      { expiresIn } as SignOptions,
       (err, token) => {
         if (err) throw err;
         res.json({ token });
@@ -102,10 +105,13 @@ export const loginUser = async (req: Request, res: Response) => {
     };
 
     // Sign JWT token
+    const secret = process.env.JWT_SECRET || 'defaultsecret';
+    const expiresIn = process.env.JWT_EXPIRES_IN || '30d';
+    
     jwt.sign(
       payload,
-      process.env.JWT_SECRET || 'defaultsecret',
-      { expiresIn: process.env.JWT_EXPIRES_IN || '30d' },
+      secret as Secret,
+      { expiresIn } as SignOptions,
       (err, token) => {
         if (err) throw err;
         res.json({ token, role: user.role });

@@ -5,6 +5,7 @@ import User, { UserRole } from '../models/User';
 import Apartment from '../models/Apartment';
 import { notifySuperAdmins } from '../services/notificationService';
 import { NotificationType } from '../models/Notification';
+import { Types } from 'mongoose';
 
 // Custom interface to extend Express Request
 interface AuthRequest extends Request {
@@ -110,7 +111,7 @@ export const markPaymentAsPaid = async (req: AuthRequest, res: Response) => {
     // Update payment status
     payment.status = PaymentStatus.PAID;
     payment.paymentDate = new Date();
-    payment.updatedBy = req.user?.id;
+    payment.updatedBy = req.user?.id ? new Types.ObjectId(req.user.id) : undefined;
     
     await payment.save();
 
